@@ -1,0 +1,26 @@
+/* clickable color squares */
+.square {
+    border: 3px solid black;
+    height: 100px;
+    width: 100px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.square:hover {
+    cursor:pointer;
+}
+
+#cc:hover {
+    cursor:not-allowed;
+}
+
+#squareHolder {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
