@@ -15,6 +15,7 @@ var allColors = {
 
 var match = null;
 var centerColor = null;
+var score = 0;
 
 // get middle color
 function getCenterColor() {
@@ -33,6 +34,10 @@ function getMatch() {
     console.log(squareList);
     console.log(allColors);
     return squareList;
+}
+
+function updateScore() {
+    document.getElementById("score").innerText = score.toString;
 }
 
 function getSimilarColors() {
@@ -70,7 +75,8 @@ function reset() {
     }
     
     // set score to zero
-    document.getElementById("score").innerText = "0";
+    score = 0;
+    updateScore();
 
     match = null;
     centerColor = null;
@@ -109,6 +115,12 @@ function newColors() {
 
 // function to check clicked square
 // +1 if correct, -1 if wrong
-
-
-// 
+function handleCLick(guess) {
+    if(guess.equals(match)) {
+        score++;
+    } else {
+        score--;
+    }
+    updateScore();
+    newColors();
+}

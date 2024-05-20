@@ -2,7 +2,165 @@
 <html>
     <head>
         <link rel="stylesheet" href="styles.css">
-        <script type="module" src="script.js"></script>
+        <!-- <script type="module" src="script.js"></script> -->
+        <script>
+            // the colors for all of the squares
+            var allColors = {
+                "tl": null,
+                "tc": null,
+                "tr": null,
+                "cl": null,
+                "cc": null,
+                "cr": null,
+                "bl": null,
+                "bc": null,
+                "br": null
+            }
+
+            var match = null;
+            var centerColor = null;
+            var score = 0;
+
+            // get middle color
+            function getCenterColor() {
+                var color = "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
+                allColors.cc = color;
+                centerColor = allColors.cc;
+            }
+
+            function getMatch() {
+                var squareList = ["tl", "tc", "tr", "cl", "cr", "bl", "bc", "br"];
+                var index = Math.floor(Math.random() * 7);
+                match = squareList[index];
+                delete squareList[index];
+                allColors[match] = allColors.cc;
+                squareList = squareList.filter(elm => elm);
+                return squareList;
+            }
+
+            function updateScore() {
+                console.log(score);
+                document.getElementById("score").innerText = score;
+            }
+
+            function adjustColor() {
+                // get a similar color to the center one
+                var color = centerColor;
+                var percent = Math.random() * 25;
+                var random = Math.floor(Math.random() * 4);
+                var num;
+                if(random == 1) {
+                    num = parseInt(color.replace("#",""), 16),
+                        amt = Math.round(2.55 * percent),
+                        R = (num >> 16) + amt,
+                        B = (num >> 8 & 0x00FF) + amt,
+                        G = (num & 0x0000FF) + amt;
+                } else if(random == 2) {
+                    num = parseInt(color.replace("#",""), 16),
+                        amt = Math.round(2.55 * percent),
+                        R = (num >> 16) - amt,
+                        B = (num >> 8 & 0x00FF) + amt,
+                        G = (num & 0x0000FF) + amt;
+                } else if(random == 3) {
+                    num = parseInt(color.replace("#",""), 16),
+                        amt = Math.round(2.55 * percent),
+                        R = (num >> 16) - amt,
+                        B = (num >> 8 & 0x00FF) + amt,
+                        G = (num & 0x0000FF) - amt;
+                } else {
+                    num = parseInt(color.replace("#",""), 16),
+                        amt = Math.round(2.55 * percent),
+                        R = (num >> 16) - amt,
+                        B = (num >> 8 & 0x00FF) - amt,
+                        G = (num & 0x0000FF) - amt;
+                }
+
+                return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
+
+            }
+
+            function getSimilarColors() {
+                var hexes = [];
+                var current;
+                while(hexes.length < 7) {
+                    current = adjustColor();
+                    if(!hexes.includes(current) && current != match) {
+                        hexes = hexes.concat(current);
+                    }
+                }
+                
+                return hexes;
+            }
+
+            // reset all colors
+            function reset() {
+                allColors = {
+                    "tl": null,
+                    "tc": null,
+                    "tr": null,
+                    "cl": null,
+                    "cc": null,
+                    "cr": null,
+                    "bl": null,
+                    "bc": null,
+                    "br": null
+                }
+            
+                match = null;
+                centerColor = null;
+            }
+
+            // create random order
+            function randomOrder() {
+                var done = false;
+                var indexes = [];
+                var newNum;
+                while(!done) {
+                    newNum = Math.floor(Math.random() * 7);
+                    if(!indexes.includes(newNum)) {
+                        indexes = indexes.concat(newNum);
+                    }
+                    if(indexes.length >= 7) {
+                        done = true;
+                    }
+                }
+                return indexes;
+            }
+
+            function showColors() {
+                var array = ["tl", "tc", "tr", "cl", "cr", "bl", "bc", "br"];
+                array.forEach(element => {
+                    document.getElementById(element).style.backgroundColor = allColors[element];
+                });
+            }
+
+            // function to make colors appear
+            function newColors() {
+                reset();
+                getCenterColor();
+                document.getElementById("cc").style.backgroundColor = allColors.cc;
+                var squareList = getMatch();
+                var similarColors = getSimilarColors(); // get the similar colors
+                var order = randomOrder(); // random order of color assignments
+                for(let i = 0; i < squareList.length; i++) { // assign the colors to the remaining squares
+                    allColors[squareList[order[i]]] = similarColors[i];
+                }
+                showColors();
+            }
+
+            // function to check clicked square
+            // +1 if correct, -1 if wrong
+            function handleClick(guess) {
+                if(guess == match) {
+                    score++;
+                } else {
+                    score--;
+                }
+                console.log(score);
+                updateScore();
+                newColors();
+            }
+        </script>
     </head>
     <body>
 
@@ -14,35 +172,35 @@
 
         <div id="squareHolder">
             <div class="row" id="rowOne">
-                <div class="square" id="tl">
+                <div class="square" id="tl" onclick="handleClick('tl')">
 
                 </div>
-                <div class="square" id="tc">
+                <div class="square" id="tc" onclick="handleClick('tc')">
 
                 </div>
-                <div class="square" id="tr">
+                <div class="square" id="tr" onclick="handleClick('tr')">
 
                 </div>
             </div>
             <div class="row" id="rowTwo">
-                <div class="square" id="cl">
+                <div class="square" id="cl" onclick="handleClick('cl')">
 
                 </div>
                 <div class="square" id="cc">
 
                 </div>
-                <div class="square" id="cr">
+                <div class="square" id="cr"  onclick="handleClick('cr')">
 
                 </div>
             </div>
             <div class="row" id="rowThree">
-                <div class="square" id="bl">
+                <div class="square" id="bl" onclick="handleClick('bl')">
 
                 </div>
-                <div class="square" id="bc">
+                <div class="square" id="bc" onclick="handleClick('bc')">
 
                 </div>
-                <div class="square" id="br">
+                <div class="square" id="br" onclick="handleClick('br')">
 
                 </div>
             </div>
