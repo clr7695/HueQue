@@ -1,4 +1,12 @@
-/* clickable color squares */
+#mainBlock {
+    display: flex;
+    flex-direction: row;
+}
+
+#right {
+    margin-left: 20px;
+}
+
 .square {
     border: 3px solid black;
     height: 100px;
@@ -28,3 +36,4 @@
 h2 {
     display: inline;
 }
+
